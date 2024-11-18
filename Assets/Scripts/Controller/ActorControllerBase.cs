@@ -27,14 +27,13 @@ namespace Controller
 
         protected AnimationController AnimationController;
         protected AnimationEventController AnimationEventController;
-        protected IKHandController IKHandController;
         protected MovementController MovementController;
         protected WeaponController WeaponController;
 
-        protected readonly Dictionary<EActionHandler, ActionBaseHandler> _actionHandlers = new();
+        protected readonly Dictionary<EActionHandler, ActionHandlerBase> _actionHandlers = new();
 
         protected Coroutine InputLockCoroutine;
-
+        
         protected virtual void Start()
         {
             navMeshAgent.speed = walkingSpeed;
@@ -77,6 +76,10 @@ namespace Controller
         {
             AbleToAction = true;
             MovementController.SetLock(false);
+
+            UnlockInput_Internal();
         }
+        
+        protected abstract void UnlockInput_Internal();
     }
 }

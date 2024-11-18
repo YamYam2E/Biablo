@@ -4,7 +4,7 @@ using Controller;
 
 namespace ActionHandler
 {
-    public class TakeHitHandler : ActionBaseHandler
+    public class TakeHitHandler : ActionHandlerBase
     {
         public TakeHitHandler(ActorControllerBase controller, Action<HandlerContext> animationCallback) : base(controller, animationCallback)
         {

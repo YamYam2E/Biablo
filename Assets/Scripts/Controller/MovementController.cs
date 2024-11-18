@@ -112,17 +112,21 @@ namespace Controller
             if (IsRolling)
                 return;
 
-            _animator.SetFloat(AnimatorHash.AnimationSpeed, 1f);
+            _animator.SetFloat(AnimatorHash.AnimationSpeed, handlerContext.AnimationMultiplier);
             _animator.SetInteger(AnimatorHash.Action, 1);
             
             // 샘플 애니메이션에서 rolling trigger 값이 28
             _animator.SetInteger(AnimatorHash.TriggerNumber, 28);
             _animator.SetTrigger(AnimatorHash.Trigger);
             
-            StartCoroutine(PlayerRolling(handlerContext.Direction, handlerContext.AnimationDuration));
+            StartCoroutine(
+                PlayerRolling(
+                    handlerContext.Direction, 
+                    handlerContext.AnimationDuration, 
+                    handlerContext.AnimationMultiplier) );
         }
 
-        private IEnumerator PlayerRolling(Vector3 direction, float duration)
+        private IEnumerator PlayerRolling(Vector3 direction, float duration, float multiplier = 1f)
         {
             if (!_navMeshAgent.isActiveAndEnabled)
                 yield break;
@@ -138,16 +142,19 @@ namespace Controller
             RotatePlayer_Directly(direction);
             
             var endPosition = direction * _rollingSpeed;
+
+            duration /= multiplier;
             
             while (elapsedTime < duration)
             {
                 elapsedTime += Time.deltaTime;
                 var t = rollingCurve.Evaluate(elapsedTime / duration);
-                _navMeshAgent.Move( Vector3.Lerp(startPosition, endPosition, t) * Time.deltaTime );
+                _navMeshAgent.Move( Vector3.Lerp(startPosition, endPosition, t) * (Time.deltaTime * multiplier) );
                 
                 yield return null;
             }
             
+            _animator.SetFloat(AnimatorHash.AnimationSpeed, 1);
             IsRolling = false;
         }
         

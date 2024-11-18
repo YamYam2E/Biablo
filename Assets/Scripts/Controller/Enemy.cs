@@ -39,5 +39,9 @@ namespace Controller
                     Damage = damage,
                 });
         }
+
+        protected override void UnlockInput_Internal()
+        {
+        }
     }
 }

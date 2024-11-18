@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 
 namespace ActionHandler
 {
-    public class AttackHandler : ActionBaseHandler
+    public class AttackHandler : ActionHandlerBase
     {
         private const float AttackDuration = 0.75f;
         
@@ -56,8 +56,18 @@ namespace ActionHandler
         private int TakeRandomSwordAttackType()
         {
             // 임시코드
-            var value = Enum.GetNames(typeof(CharacterSkillType.ESwordAttackType));
-            return Random.Range(0, value.Length);
+            // var value = Enum.GetNames(typeof(CharacterSkillType.ESwordAttackType));
+
+            switch (_attackSide)
+            {
+                case EAttackSide.Left:
+                    return Random.Range(1, 4);
+                case EAttackSide.Right:
+                    return Random.Range(4, 7);
+                case EAttackSide.Both:
+                default:
+                    return Random.Range(1, 4);
+            }
         }
 
         protected override void StartAction_Internal()
@@ -88,7 +98,8 @@ namespace ActionHandler
 
         private void SetContext_Sword()
         {
-            _attackSide = EAttackSide.Left;
+            SetAttackSideType();
+            
             Context.AnimationType = EAnimationType.Attack;
             Context.AttackSide = _attackSide;
             Context.ActionNumber = TakeRandomSwordAttackType();

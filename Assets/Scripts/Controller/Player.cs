@@ -1,4 +1,5 @@
-﻿using ActionHandler;
+﻿using System;
+using ActionHandler;
 using ActionHandler.Data;
 using Common;
 using Controller.Animation;
@@ -9,9 +10,17 @@ namespace Controller
     [RequireComponent(typeof(InputController), typeof(MovementController))]
     public class Player : ActorControllerBase
     {
+        [Serializable]
+        public class State
+        {
+            public bool IsRolling = false;
+        }
+        
         // 캐릭터 카메라
         [SerializeField] private new Camera camera;
 
+        [SerializeField] private State ActorState = new();
+        
         private InputController _inputController;
         
         protected override void Start()
@@ -27,24 +36,29 @@ namespace Controller
             _inputController.OnRollingEvent.AddListener(OnRollingInput);
             
             // 기본 무기는 주먹
+            WeaponController.Setup( animator );
             WeaponController.Equip( animator, EWeaponType.TwoHandSword);
-            IKHandController.SetIKOn( (EWeaponType)animator.GetInteger(AnimatorHash.Weapon) );
         }
 
         private void Update()
         {
+            if (AbleToAction == false)
+                return;
+            
             if (Input.GetKeyDown(KeyCode.Alpha1) && WeaponController.CurrentWeaponType != EWeaponType.Punch)
             {
                 WeaponController.UnEquip(animator);
                 WeaponController.Equip( animator, EWeaponType.Punch);
-                IKHandController.SetIKOff();
+                
+                OnInputLock(0.8f);
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha2) && WeaponController.CurrentWeaponType != EWeaponType.TwoHandSword)
             {
                 WeaponController.UnEquip(animator);
                 WeaponController.Equip( animator, EWeaponType.TwoHandSword);
-                IKHandController.SetIKOn( (EWeaponType)animator.GetInteger(AnimatorHash.Weapon) );
+                
+                OnInputLock(0.8f);
             }
         }
 
@@ -55,9 +69,6 @@ namespace Controller
             AnimationEventController.OnFootL.AddListener(() => Debug.Log("FootL"));
             AnimationEventController.OnFootR.AddListener(() => Debug.Log("FootR"));
             AnimationEventController.OnHit.AddListener( OnAttackAnimationEvent );
-
-            IKHandController = animator.gameObject.AddComponent<IKHandController>();
-            IKHandController.Initialize( WeaponController );
         }
 
         protected override void BindActionHandlers()
@@ -66,14 +77,14 @@ namespace Controller
                 this, 
                 context =>
                 {
-                    OnInputLock(context.AnimationDuration);
+                    OnInputLock(context.AnimationDuration / context.AnimationMultiplier);
                     AnimationController.OnAttack(context);
                 }));
             
             _actionHandlers.Add(EActionHandler.Rolling, new RollingHandler(this, 
                 context =>
                 {
-                    OnInputLock(context.AnimationDuration);
+                    OnInputLock(context.AnimationDuration / context.AnimationMultiplier);
                     MovementController.OnRolling(context);
                 }));
             
@@ -92,7 +103,7 @@ namespace Controller
         {
             if (!_actionHandlers.TryGetValue(EActionHandler.Attack, out var handler))
                 return;
-            
+
             handler.StartAction(
                 new HandlerContext
                 {
@@ -105,7 +116,16 @@ namespace Controller
             if (!_actionHandlers.TryGetValue(EActionHandler.Rolling, out var handler))
                 return;
             
-            handler.StartAction( new HandlerContext() {Direction = direction} );
+            if (ActorState.IsRolling)
+                return;
+                            
+            ActorState.IsRolling = true;
+
+            handler.StartAction( new HandlerContext()
+            {
+                AnimationMultiplier = 1.5f,
+                Direction = direction
+            } );
         }
 
         public override void OnTakeDamage(bool isCritical, float damage)
@@ -118,6 +138,11 @@ namespace Controller
                 {
                     Damage = damage,
                 });
+        }
+
+        protected override void UnlockInput_Internal()
+        {
+            ActorState.IsRolling = false;
         }
     }
 }

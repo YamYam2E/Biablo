@@ -8054,6 +8054,10 @@ PrefabInstance:
       propertyPath: camera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 8954170684703006588, guid: 92f437431bb11054dbeee096de091372, type: 3}
+      propertyPath: ActorState.IsRolling
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

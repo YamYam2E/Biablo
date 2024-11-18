@@ -15,6 +15,7 @@ namespace ActionHandler.Data
         public int ActionNumber;
         public int TriggerNumber;
         public float AnimationDuration;
+        public float AnimationMultiplier = 1f;
         
         public float Damage = 0f;
         

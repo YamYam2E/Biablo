@@ -4,11 +4,12 @@ using Controller;
 
 namespace ActionHandler
 {
-    public class RollingHandler : ActionBaseHandler
+    public class RollingHandler : ActionHandlerBase
     {
         public RollingHandler(ActorControllerBase controller, Action<HandlerContext> animationCallback) 
             : base(controller, animationCallback)
         {
+            IgnoreControllerLock = true;
         }
 
         protected override void StartAction_Internal()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ActionHandler;
 using ActionHandler.Data;
 using Common;
+using Controller.Animation;
 using UnityEngine;
 using Weapons;
 
@@ -22,8 +23,12 @@ namespace Controller
 
         private Dictionary<EWeaponType, List<WeaponBase>> _weapons = new();
         
+        private IKHandController _ikHandController;
+        
         public void Setup(Animator animator)
         {
+            _ikHandController = animator.gameObject.AddComponent<IKHandController>();
+            _ikHandController.Initialize( this );
         }
 
         public void UnEquip(Animator animator)
@@ -50,12 +55,27 @@ namespace Controller
 
             for (var index = 0; index < weapons.Count; index++)
                 weapons[index].gameObject.SetActive(true);
-            
-            
+
             CurrentWeaponType = weaponType;
-            animator.SetInteger(AnimatorHash.Weapon, ( int )CurrentWeaponType);
-            animator.SetInteger(AnimatorHash.TriggerNumber, 25);
+            animator.SetFloat(AnimatorHash.AnimationSpeed, 1f);
+            animator.SetInteger(AnimatorHash.Weapon, 1);
+            animator.SetInteger(AnimatorHash.TriggerNumber, GetTriggerNumberForSwitching(weaponType));
             animator.SetTrigger(AnimatorHash.Trigger);
+
+            if (weaponType == EWeaponType.Punch)
+                _ikHandController.SetIKOff();
+            else
+                _ikHandController.SetIKOn( (EWeaponType)animator.GetInteger(AnimatorHash.Weapon) );
+        }
+
+        private int GetTriggerNumberForSwitching(EWeaponType weaponType)
+        {
+            switch (weaponType)
+            {
+                case EWeaponType.Punch: return 15;
+                case EWeaponType.TwoHandSword: return 16;
+                default: return 0;
+            }
         }
 
         private List<WeaponBase> CreateEquippedWeapons(EWeaponType weaponType)
@@ -96,8 +116,13 @@ namespace Controller
 
         public void OnAttack(HandlerContext context)
         {
-            var weapon = context.AttackSide == AttackHandler.EAttackSide.Left ? leftWeapon : rightWeapon;
-
+            WeaponBase weapon;
+            
+            if (context.WeaponType == EWeaponType.TwoHandSword)
+                weapon = leftWeapon;
+            else
+                weapon = context.AttackSide == AttackHandler.EAttackSide.Left ? leftWeapon : rightWeapon;
+  
             weapon.OnAttack(context);
         }
         
