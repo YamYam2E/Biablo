@@ -17,8 +17,9 @@ namespace Controller.Animation
 
         public void OnAttack(HandlerContext context)
         {
+            _animator.SetFloat(AnimatorHash.AnimationSpeed, context.AnimationMultiplier);
+            
             _animator.SetInteger(AnimatorHash.Weapon, (int)context.WeaponType);
-            _animator.SetInteger(AnimatorHash.Side, (int)context.AttackSide);
             _animator.SetInteger(AnimatorHash.Action, (int)context.ActionNumber);
             
             // 샘플 애니메이션에서 attack trigger 값이 4

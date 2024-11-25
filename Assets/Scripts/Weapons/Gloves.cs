@@ -28,7 +28,7 @@ namespace Weapons
                 targetCollider.transform.position, 
                 radius, 
                 targets, 
-                LayerMask.GetMask("Enemy"));
+                context.targetLayer);
 
             if (size == 0)
                 return;

@@ -12,6 +12,7 @@ namespace ActionHandler.Data
         public EWeaponType WeaponType = EWeaponType.Punch;
         public EAnimationType AnimationType = EAnimationType.None;
         public AttackHandler.EAttackSide AttackSide;
+        public LayerMask targetLayer;
         public int ActionNumber;
         public int TriggerNumber;
         public float AnimationDuration;

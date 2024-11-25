@@ -12,7 +12,7 @@ namespace Controller
     public abstract class ActorControllerBase : MonoBehaviour
     {
         // 이동 관련 변수
-        [SerializeField] protected float walkingSpeed = 4f;
+        [SerializeField] protected float walkingSpeed = 2f;
         [SerializeField] protected float runningSpeed = 6f;
         [SerializeField] protected float stoppingDistance = 0.1f;
 
@@ -81,5 +81,7 @@ namespace Controller
         }
         
         protected abstract void UnlockInput_Internal();
+        
+        public Animator GetAnimator() => animator;
     }
 }

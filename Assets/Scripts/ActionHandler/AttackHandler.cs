@@ -11,7 +11,8 @@ namespace ActionHandler
 {
     public class AttackHandler : ActionHandlerBase
     {
-        private const float AttackDuration = 0.75f;
+        public const float PunchAttackDuration = 0.6f;
+        public const float SwordAttackDuration = 1.0f;
         
         public enum EAttackSide
         {
@@ -55,9 +56,6 @@ namespace ActionHandler
 
         private int TakeRandomSwordAttackType()
         {
-            // 임시코드
-            // var value = Enum.GetNames(typeof(CharacterSkillType.ESwordAttackType));
-
             switch (_attackSide)
             {
                 case EAttackSide.Left:
@@ -74,11 +72,18 @@ namespace ActionHandler
         {
             switch (Context.WeaponType)
             {
-                case EWeaponType.Punch: SetContext_Punch(); break;
-                case EWeaponType.TwoHandSword: SetContext_Sword(); break;
+                case EWeaponType.Punch: 
+                    SetContext_Punch(); 
+                    break;
+                case EWeaponType.TwoHandSword: 
+                    SetContext_Sword(); 
+                    break;
                 default:
                     break;
             }
+
+            // Animation 속도 강제로 1.5f 조정
+            Context.AnimationMultiplier = 1.5f;
             
             AnimationCallback?.Invoke(Context);
         }
@@ -93,7 +98,7 @@ namespace ActionHandler
             Context.AttackSide = _attackSide;
             Context.ActionNumber = (int)actionType;
             Context.TriggerNumber = 4;
-            Context.AnimationDuration = AttackDuration;
+            Context.AnimationDuration = PunchAttackDuration;
         }
 
         private void SetContext_Sword()
@@ -104,7 +109,7 @@ namespace ActionHandler
             Context.AttackSide = _attackSide;
             Context.ActionNumber = TakeRandomSwordAttackType();
             Context.TriggerNumber = 4;
-            Context.AnimationDuration = AttackDuration;
+            Context.AnimationDuration = SwordAttackDuration;
         }
         
         protected override void EndAction_Internal()

@@ -69,9 +69,20 @@ namespace Controller
             IsRotate = true;
         }
 
+        public void MoveTo(Vector3 destination, bool isRunning = false)
+        {
+            if (Locked)
+                return;
+            
+            _navMeshAgent.SetDestination(destination);
+        }
+
         public void OnMove(float horizontal, float vertical, bool isRunning)
         {
             if (Locked)
+                return;
+
+            if (IsRolling)
                 return;
             
             if (isRunning)

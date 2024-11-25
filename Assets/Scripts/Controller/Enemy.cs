@@ -1,6 +1,7 @@
 ﻿using ActionHandler;
 using ActionHandler.Data;
 using Common;
+using Controller.Animation;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,9 +10,25 @@ namespace Controller
     public class Enemy : ActorControllerBase
     {
         [SerializeField] private NavMeshObstacle navMeshObstacle;
-        
+
+        protected override void Start()
+        {
+            base.Start();
+            
+            MovementController.Initialize( animator, rigidBody, navMeshAgent, walkingSpeed, runningSpeed );
+            
+            // 기본 무기는 주먹
+            WeaponController.Setup( animator );
+            WeaponController.Equip( animator, EWeaponType.Punch);
+        }
+
         protected override void BindAnimationEvents()
         {
+            AnimationEventController = animator.gameObject.AddComponent<AnimationEventController>();
+            
+            AnimationEventController.OnFootL.AddListener(() => Debug.Log("FootL"));
+            AnimationEventController.OnFootR.AddListener(() => Debug.Log("FootR"));
+            AnimationEventController.OnHit.AddListener( OnAttackAnimationEvent );
         }
 
         protected override void BindActionHandlers()
@@ -28,6 +45,11 @@ namespace Controller
             _actionHandlers.Add(EActionHandler.TakeHit, new TakeHitHandler(this, AnimationController.OnTakeHit));
         }
 
+        public void MoveTo(Vector3 destination)
+        {
+            MovementController.MoveTo(destination);
+        }
+        
         public override void OnTakeDamage(bool isCritical, float damage)
         {
             if (!_actionHandlers.TryGetValue(EActionHandler.TakeHit, out var handler))
@@ -38,6 +60,29 @@ namespace Controller
                 {
                     Damage = damage,
                 });
+        }
+
+        public void AttackFromAi()
+        {
+            if (!_actionHandlers.TryGetValue(EActionHandler.Attack, out var handler))
+                return;
+
+            handler.StartAction(
+                new HandlerContext
+                {
+                    WeaponType = WeaponController.CurrentWeaponType
+                });
+        }
+        
+        private void OnAttackAnimationEvent()
+        {
+            if (!_actionHandlers.TryGetValue(EActionHandler.Attack, out var handler))
+                return;
+            
+            // 타겟 레이어 정의
+            handler.Context.targetLayer = LayerMask.GetMask("Player");
+            
+            WeaponController.OnAttack(handler.Context);
         }
 
         protected override void UnlockInput_Internal()

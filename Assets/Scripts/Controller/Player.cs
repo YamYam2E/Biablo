@@ -95,6 +95,9 @@ namespace Controller
         {
             if (!_actionHandlers.TryGetValue(EActionHandler.Attack, out var handler))
                 return;
+           
+            // 타겟 레이어 정의
+            handler.Context.targetLayer = LayerMask.GetMask("Enemy");
             
             WeaponController.OnAttack(handler.Context);
         }

@@ -1,0 +1,68 @@
+﻿using UnityEngine;
+
+namespace Ai.Node.Condition
+{
+    public class IsInAttackRangeConditionNode : ConditionNodeBase
+    {
+        private Transform _agent;
+        
+        public IsInAttackRangeConditionNode(Transform agent, Blackboard blackboard) : base(blackboard)
+        {
+            _agent = agent;
+        }
+
+        public override INode.State Evaluate()
+        {
+            return IsInTarget() ? INode.State.Success : INode.State.Failure;
+        }
+        
+        private bool IsInTarget()
+        {
+            Blackboard.AttackTarget = null;
+            
+            var results = new Collider[1];
+            var playerLayerMask = LayerMask.GetMask("Player");
+            
+            var size = Physics.OverlapSphereNonAlloc(_agent.position, Blackboard.AttackRange, results, playerLayerMask);
+
+            if (size == 0)
+                return false;
+
+            if (HasObstacleBetweenActor(results[0].transform))
+                return false;
+
+            Blackboard.AttackTarget = results[0].transform;
+            
+            return true;
+        }
+        
+        private bool HasObstacleBetweenActor(Transform target)
+        {
+            var directionToTarget = (target.position - _agent.position).normalized;
+            var distanceToTarget = Vector3.Distance(_agent.position, target.position);
+
+            var playerLayerMask = LayerMask.GetMask("Player");
+            var obstacleLayerMask = LayerMask.GetMask("Obstacle");
+            // 거리 체크
+            if (distanceToTarget > Blackboard.AttackRange)
+                return false;
+
+            // 장애물 체크
+            if (!Physics.Raycast(
+                    _agent.position, 
+                    directionToTarget, 
+                    out var hit, 
+                    distanceToTarget,
+                    obstacleLayerMask | playerLayerMask) ) 
+                return true;
+            
+            // 맞은 오브젝트가 타겟인 경우
+            if (hit.transform == target)
+                return false;
+            
+            // 장애물에 가로막힌 경우
+            return true;
+
+        }
+    }
+}
