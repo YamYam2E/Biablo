@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ActionHandler;
 using Common;
 using Controller.Animation;
+using Status;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,8 +13,6 @@ namespace Controller
     public abstract class ActorControllerBase : MonoBehaviour
     {
         // 이동 관련 변수
-        [SerializeField] protected float walkingSpeed = 2f;
-        [SerializeField] protected float runningSpeed = 6f;
         [SerializeField] protected float stoppingDistance = 0.1f;
 
         // 컴포넌트 참조
@@ -34,9 +33,11 @@ namespace Controller
 
         protected Coroutine InputLockCoroutine;
         
+        protected ActorStatus Status;
+        
         protected virtual void Start()
         {
-            navMeshAgent.speed = walkingSpeed;
+            navMeshAgent.speed = Status.WalkingSpeed;
             navMeshAgent.stoppingDistance = stoppingDistance;
 
             MovementController = gameObject.GetComponent<MovementController>();

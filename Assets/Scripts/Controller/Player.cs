@@ -3,6 +3,7 @@ using ActionHandler;
 using ActionHandler.Data;
 using Common;
 using Controller.Animation;
+using Status;
 using UnityEngine;
 
 namespace Controller
@@ -13,7 +14,7 @@ namespace Controller
         [Serializable]
         public class State
         {
-            public bool IsRolling = false;
+            public bool IsRolling;
         }
         
         // 캐릭터 카메라
@@ -25,9 +26,19 @@ namespace Controller
         
         protected override void Start()
         {
+            Status = new ActorStatus
+            {
+                MaxHealth = 100,
+                CurrentHealth = 100,
+                AttackSpeed = 1.5f,
+                WalkingSpeed = 3f,
+                RunningSpeed = 6f,
+                Stamina = 100
+            };
+            
             base.Start();
             
-            MovementController.Initialize( animator, rigidBody, navMeshAgent, walkingSpeed, runningSpeed );
+            MovementController.Initialize( animator, rigidBody, navMeshAgent, Status.WalkingSpeed, Status.RunningSpeed );
             MovementController.SetRotate(camera);
             
             _inputController = gameObject.GetComponent<InputController>();

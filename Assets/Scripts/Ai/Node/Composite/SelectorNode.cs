@@ -29,9 +29,13 @@ namespace Ai.Node.Composite
             {
                 var child = children[index];
                 var state = child.Evaluate();
-                
+
                 if (state == INode.State.Running)
+                {
+                    _currentRunningNodeIndex = index;
                     return INode.State.Running;
+                }
+                
                 if (state == INode.State.Success)
                 {
                     ResetSequence();

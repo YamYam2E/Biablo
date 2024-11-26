@@ -2,6 +2,7 @@
 using ActionHandler.Data;
 using Common;
 using Controller.Animation;
+using Status;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -13,13 +14,25 @@ namespace Controller
 
         protected override void Start()
         {
+            Status = new ActorStatus
+            {
+                MaxHealth = 100,
+                CurrentHealth = 100,
+                AttackSpeed = 0.5f,
+                WalkingSpeed = 2.5f,
+                RunningSpeed = 5f,
+                Stamina = 100
+            };
+            
             base.Start();
             
-            MovementController.Initialize( animator, rigidBody, navMeshAgent, walkingSpeed, runningSpeed );
+            MovementController.Initialize( animator, rigidBody, navMeshAgent, Status.WalkingSpeed, Status.RunningSpeed );
             
             // 기본 무기는 주먹
             WeaponController.Setup( animator );
             WeaponController.Equip( animator, EWeaponType.Punch);
+            
+            navMeshAgent.angularSpeed = 720f;
         }
 
         protected override void BindAnimationEvents()
@@ -48,6 +61,11 @@ namespace Controller
         public void MoveTo(Vector3 destination)
         {
             MovementController.MoveTo(destination);
+        }
+
+        public void Stop()
+        {
+            MovementController.Stop();
         }
         
         public override void OnTakeDamage(bool isCritical, float damage)

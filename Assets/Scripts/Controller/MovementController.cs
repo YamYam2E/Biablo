@@ -69,14 +69,6 @@ namespace Controller
             IsRotate = true;
         }
 
-        public void MoveTo(Vector3 destination, bool isRunning = false)
-        {
-            if (Locked)
-                return;
-            
-            _navMeshAgent.SetDestination(destination);
-        }
-
         public void OnMove(float horizontal, float vertical, bool isRunning)
         {
             if (Locked)
@@ -85,11 +77,6 @@ namespace Controller
             if (IsRolling)
                 return;
             
-            if (isRunning)
-                _animator.SetFloat(AnimatorHash.AnimationSpeed, 1.5f);
-            else
-                _animator.SetFloat(AnimatorHash.AnimationSpeed, 1f);
-
             if (horizontal == 0 && vertical == 0)
             {
                 _animator.SetBool(AnimatorHash.Moving, false);
@@ -109,6 +96,11 @@ namespace Controller
 
             _navMeshAgent.Move(point);
 
+            SetMovementAnimation();
+        }
+
+        private void SetMovementAnimation()
+        {
             // 월드 공간의 방향 벡터를 로컬 공간의 방향 벡터로 변환
             _animator.SetFloat(AnimatorHash.VelocityX, transform.InverseTransformDirection(_currentVelocity).x);
             _animator.SetFloat(AnimatorHash.VelocityZ, transform.InverseTransformDirection(_currentVelocity).z);
@@ -206,6 +198,22 @@ namespace Controller
 
         private void UnlockMovement()
         {
+        }
+
+        public void MoveTo(Vector3 destination, bool isRunning = false)
+        {
+            if (Locked)
+                return;
+
+            _currentVelocity = transform.forward;
+            _navMeshAgent.SetDestination(destination);
+            SetMovementAnimation();
+        }
+        
+        public void Stop()
+        {
+            _animator.SetBool(AnimatorHash.Moving, false);
+            _navMeshAgent.SetDestination(transform.position);
         }
     }
 }

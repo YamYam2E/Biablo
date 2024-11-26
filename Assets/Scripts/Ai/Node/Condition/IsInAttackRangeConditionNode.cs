@@ -35,33 +35,26 @@ namespace Ai.Node.Condition
             
             return true;
         }
-        
+
         private bool HasObstacleBetweenActor(Transform target)
         {
             var directionToTarget = (target.position - _agent.position).normalized;
             var distanceToTarget = Vector3.Distance(_agent.position, target.position);
-
-            var playerLayerMask = LayerMask.GetMask("Player");
-            var obstacleLayerMask = LayerMask.GetMask("Obstacle");
-            // 거리 체크
-            if (distanceToTarget > Blackboard.AttackRange)
-                return false;
-
+            var obstacleLayerMask = LayerMask.GetMask("Wall");
+            
             // 장애물 체크
-            if (!Physics.Raycast(
-                    _agent.position, 
-                    directionToTarget, 
-                    out var hit, 
+            if (Physics.Raycast(
+                    _agent.position,
+                    directionToTarget,
+                    out var hit,
                     distanceToTarget,
-                    obstacleLayerMask | playerLayerMask) ) 
+                    obstacleLayerMask))
+            {
+                Debug.Log(hit.collider.gameObject.name);
                 return true;
-            
-            // 맞은 오브젝트가 타겟인 경우
-            if (hit.transform == target)
-                return false;
-            
+            }
             // 장애물에 가로막힌 경우
-            return true;
+            return false;
 
         }
     }
