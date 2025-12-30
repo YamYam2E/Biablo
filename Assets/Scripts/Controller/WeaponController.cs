@@ -10,6 +10,8 @@ namespace Controller
 {
     public class WeaponController : MonoBehaviour
     {
+        public const float WeaponSwitchTime = 0.8f;
+        
         [SerializeField] private Transform leftHand;
         [SerializeField] private Transform rightHand;
 

@@ -2,7 +2,7 @@
 
 namespace Common
 {
-    public class AnimatorHash
+    public abstract class AnimatorHash
     {
         public static readonly int Moving = Animator.StringToHash("Moving");
         public static readonly int VelocityX = Animator.StringToHash("Velocity X");

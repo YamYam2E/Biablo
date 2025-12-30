@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Common;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Controller
@@ -11,6 +12,7 @@ namespace Controller
         public UnityEvent<float, float, bool> OnMovementEvent = new();
         public UnityEvent OnAttackEvent = new();
         public UnityEvent<Vector3> OnRollingEvent = new();
+        public UnityEvent<EWeaponType> OnWeaponSwitchEvent = new();
         
         public bool IsAbleInput { get; private set; } = true;
         public void SetAbleInput(bool isAbleInput) => IsAbleInput = isAbleInput;
@@ -23,6 +25,16 @@ namespace Controller
         {
             if (!IsAbleInput)
                 return;
+            
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                OnWeaponSwitchEvent.Invoke(EWeaponType.Punch);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                OnWeaponSwitchEvent.Invoke(EWeaponType.TwoHandSword);
+            }
+            
             
             Moving();
             Attacking();

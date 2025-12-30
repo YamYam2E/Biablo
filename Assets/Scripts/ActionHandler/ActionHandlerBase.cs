@@ -6,9 +6,9 @@ namespace ActionHandler
 {
     public abstract class ActionHandlerBase : IActionHandler
     {
-        public ActorControllerBase Controller { get; protected set; }
+        public ActorControllerBase Controller { get; }
         public HandlerContext Context { get; protected set; }
-        public bool IsActive { get; protected set; } = true;
+        public bool IsActive { get; private set; }
         
         protected abstract void StartAction_Internal();
 
@@ -24,14 +24,16 @@ namespace ActionHandler
             AnimationCallback = animationCallback;
         }
 
-        public void StartAction(HandlerContext context = default)
+        public void StartAction(HandlerContext context = null)
         {
             if (!IgnoreControllerLock && !Controller.AbleToAction)
                 return;
 
-            if (!IsActive)
+            if (IsActive)
                 return;
 
+            IsActive = true;
+            
             Context = context ?? new HandlerContext();
             
             StartAction_Internal();
@@ -41,6 +43,8 @@ namespace ActionHandler
         {
             if (!IsActive)
                 return;
+
+            IsActive = false;
             
             EndAction_Internal();
         }

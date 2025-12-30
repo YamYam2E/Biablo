@@ -8,20 +8,12 @@ using UnityEngine;
 
 namespace Controller
 {
-    [RequireComponent(typeof(InputController), typeof(MovementController))]
+    [RequireComponent(typeof(MovementController))]
     public class Player : ActorControllerBase
     {
-        [Serializable]
-        public class State
-        {
-            public bool IsRolling;
-        }
-        
         // 캐릭터 카메라
-        [SerializeField] private new Camera camera;
+        [SerializeField] private Camera playerCamera;
 
-        [SerializeField] private State ActorState = new();
-        
         private InputController _inputController;
         
         protected override void Start()
@@ -39,42 +31,24 @@ namespace Controller
             base.Start();
             
             MovementController.Initialize( animator, rigidBody, navMeshAgent, Status.WalkingSpeed, Status.RunningSpeed );
-            MovementController.SetRotate(camera);
+            MovementController.SetRotate(playerCamera);
             
             _inputController = gameObject.GetComponent<InputController>();
             _inputController.OnMovementEvent.AddListener( MovementController.OnMove );
             _inputController.OnAttackEvent.AddListener(OnAttackInput);
             _inputController.OnRollingEvent.AddListener(OnRollingInput);
+            _inputController.OnWeaponSwitchEvent.AddListener(OnWeaponSwitchInput);
             
             // 기본 무기는 주먹
             WeaponController.Setup( animator );
             WeaponController.Equip( animator, EWeaponType.TwoHandSword);
         }
 
-        private void Update()
-        {
-            if (AbleToAction == false)
-                return;
-            
-            if (Input.GetKeyDown(KeyCode.Alpha1) && WeaponController.CurrentWeaponType != EWeaponType.Punch)
-            {
-                WeaponController.UnEquip(animator);
-                WeaponController.Equip( animator, EWeaponType.Punch);
-                
-                OnInputLock(0.8f);
-            }
-
-            if (Input.GetKeyDown(KeyCode.Alpha2) && WeaponController.CurrentWeaponType != EWeaponType.TwoHandSword)
-            {
-                WeaponController.UnEquip(animator);
-                WeaponController.Equip( animator, EWeaponType.TwoHandSword);
-                
-                OnInputLock(0.8f);
-            }
-        }
-
         protected override void BindAnimationEvents()
         {
+            if (AnimationEventController != null)
+                return;
+            
             AnimationEventController = animator.gameObject.AddComponent<AnimationEventController>();
             
             AnimationEventController.OnFootL.AddListener(() => Debug.Log("FootL"));
@@ -129,17 +103,37 @@ namespace Controller
         {
             if (!_actionHandlers.TryGetValue(EActionHandler.Rolling, out var handler))
                 return;
-            
-            if (ActorState.IsRolling)
+
+            if (handler.IsActive)
                 return;
                             
-            ActorState.IsRolling = true;
-
             handler.StartAction( new HandlerContext()
             {
                 AnimationMultiplier = 1.5f,
                 Direction = direction
             } );
+        }
+
+        private void OnWeaponSwitchInput(EWeaponType weaponType)
+        {
+            if (!AbleToAction)
+                return;
+            
+            if (WeaponController.CurrentWeaponType != EWeaponType.Punch)
+            {
+                WeaponController.UnEquip(animator);
+                WeaponController.Equip( animator, EWeaponType.Punch);
+                
+                OnInputLock(WeaponController.WeaponSwitchTime);
+            }
+
+            if (WeaponController.CurrentWeaponType != EWeaponType.TwoHandSword)
+            {
+                WeaponController.UnEquip(animator);
+                WeaponController.Equip( animator, EWeaponType.TwoHandSword);
+                
+                OnInputLock(WeaponController.WeaponSwitchTime);
+            }
         }
 
         public override void OnTakeDamage(bool isCritical, float damage)
@@ -156,7 +150,12 @@ namespace Controller
 
         protected override void UnlockInput_Internal()
         {
-            ActorState.IsRolling = false;
+            /*
+             * TODO: 전체 핸들러의 액션을 끄는 것보다,
+             * 활성화 된 액션이 무엇인지 체크하고 그 액션만 끄는게 좋지 않을까?
+             */
+            foreach (var handler in _actionHandlers.Values)
+                handler.EndAction();
         }
     }
 }

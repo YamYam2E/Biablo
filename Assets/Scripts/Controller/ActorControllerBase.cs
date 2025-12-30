@@ -9,6 +9,16 @@ using UnityEngine.AI;
 
 namespace Controller
 {
+    /// <summary>
+    /// Base class for all actor controllers in the game.
+    /// </summary>
+    /// <remarks>
+    /// This abstract class handles core functionalities such as movement, animation, status,
+    /// and action handling for actors. It integrates various components like
+    /// <c>AnimationController</c>, <c>WeaponController</c>, and <c>MovementController</c>.
+    /// Derived classes must implement certain abstract methods to define
+    /// custom behavior.
+    /// </remarks>
     [RequireComponent(typeof(AnimationController), typeof(WeaponController))]
     public abstract class ActorControllerBase : MonoBehaviour
     {
@@ -22,19 +32,19 @@ namespace Controller
         // 네비
         [SerializeField] protected NavMeshAgent navMeshAgent;
 
-        public bool AbleToAction { get; protected set; } = true;
+        public bool AbleToAction { get; private set; } = true;
 
         protected AnimationController AnimationController;
         protected AnimationEventController AnimationEventController;
         protected MovementController MovementController;
         protected WeaponController WeaponController;
+        protected ActorStatus Status;
 
         protected readonly Dictionary<EActionHandler, ActionHandlerBase> _actionHandlers = new();
 
-        protected Coroutine InputLockCoroutine;
-        
-        protected ActorStatus Status;
-        
+        private Coroutine InputLockCoroutine;
+
+
         protected virtual void Start()
         {
             navMeshAgent.speed = Status.WalkingSpeed;
@@ -63,6 +73,11 @@ namespace Controller
             InputLockCoroutine = StartCoroutine(LockInput(duration));
         }
 
+        /// <summary>
+        /// Locks the input for a specified duration, disabling actions and movement.
+        /// </summary>
+        /// <param name="duration"></param>
+        /// <returns></returns>
         private IEnumerator LockInput(float duration)
         {
             AbleToAction = false;
@@ -73,7 +88,10 @@ namespace Controller
             UnlockInput();
         }
 
-        protected void UnlockInput()
+        /// <summary>
+        /// Unlocks the input.
+        /// </summary>
+        private void UnlockInput()
         {
             AbleToAction = true;
             MovementController.SetLock(false);
