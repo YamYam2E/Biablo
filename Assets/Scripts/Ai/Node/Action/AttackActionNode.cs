@@ -24,8 +24,11 @@ namespace Ai.Node.Action
             {
                 _actorController.AttackFromAi();
                 
-                // TODO: 테스트 코드: 펀치만 사용
-                _attackDuration = AttackHandler.PunchAttackDuration;
+                /*
+                 * TODO: (테스트 코드) 펀치만 사용
+                 * PunchAttackProcessor.PunchAttackDuration; 참조
+                 */
+                _attackDuration = 0.6f;
                 _attackStartTime = Time.time;
                 _isAttacking = true;
             }

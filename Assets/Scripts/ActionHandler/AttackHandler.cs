@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ActionHandler.Data;
+using ActionHandler.Processor;
 using Common;
 using Common.SkillType;
 using Controller;
@@ -11,9 +13,6 @@ namespace ActionHandler
 {
     public class AttackHandler : ActionHandlerBase
     {
-        public const float PunchAttackDuration = 0.6f;
-        public const float SwordAttackDuration = 1.0f;
-        
         public enum EAttackSide
         {
             None,
@@ -22,96 +21,35 @@ namespace ActionHandler
             Both,
         }
         
-        
         private EAttackSide _attackSide;
+        
+        private Dictionary<EWeaponType, IAttackProcessor> _attackProcessors;
 
         public AttackHandler(ActorControllerBase controller, Action<HandlerContext> animationCallback) 
             : base(controller, animationCallback)
         {
-        }
-
-        private void SetAttackSideType()
-        {
-            switch (_attackSide)
+            _attackProcessors = new Dictionary<EWeaponType, IAttackProcessor>
             {
-                case EAttackSide.None:
-                    _attackSide = EAttackSide.Left; break;
-                case EAttackSide.Left:
-                    _attackSide = EAttackSide.Right; break;
-                case EAttackSide.Right:
-                    _attackSide = EAttackSide.Left; break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private CharacterSkillType.EPunchType TakeRandomPunchType(EAttackSide sideType)
-        {
-            var value = sideType == EAttackSide.Left ? 
-                CharacterSkillType.LeftPunches : 
-                CharacterSkillType.RightPunches;
-
-            return value[Random.Range(0, value.Length)];
-        }
-
-        private int TakeRandomSwordAttackType()
-        {
-            switch (_attackSide)
-            {
-                case EAttackSide.Left:
-                    return Random.Range(1, 4);
-                case EAttackSide.Right:
-                    return Random.Range(4, 7);
-                case EAttackSide.Both:
-                default:
-                    return Random.Range(1, 4);
-            }
+                { EWeaponType.Punch, new PunchAttackProcessor() },
+                { EWeaponType.TwoHandSword , new TwoHandSwordAttackProcessor() }
+            };
         }
 
         protected override void StartAction_Internal()
         {
-            switch (Context.WeaponType)
+            if (_attackProcessors.TryGetValue(Context.WeaponType, out var processor))
             {
-                case EWeaponType.Punch: 
-                    SetContext_Punch(); 
-                    break;
-                case EWeaponType.TwoHandSword: 
-                    SetContext_Sword(); 
-                    break;
-                default:
-                    break;
+                processor.SetContext(Context, ref _attackSide);
             }
 
-            // Animation 속도 강제로 1.5f 조정
+            /*
+             * TODO: 이렇게 하면 나중에 계속해서 강제로 속도 조절해야하는 문제 발생
+             * 캐릭터의 스텟(예, 속도)이나 무기별 속도에 따라 변하도록 동적으로 바꾸는 것이 필요.
+             */
             Context.AnimationMultiplier = 1.5f;
-            
             AnimationCallback?.Invoke(Context);
         }
 
-        private void SetContext_Punch()
-        {
-            SetAttackSideType();
-
-            var actionType = TakeRandomPunchType(_attackSide);
-
-            Context.AnimationType = EAnimationType.Attack;
-            Context.AttackSide = _attackSide;
-            Context.ActionNumber = (int)actionType;
-            Context.TriggerNumber = 4;
-            Context.AnimationDuration = PunchAttackDuration;
-        }
-
-        private void SetContext_Sword()
-        {
-            SetAttackSideType();
-            
-            Context.AnimationType = EAnimationType.Attack;
-            Context.AttackSide = _attackSide;
-            Context.ActionNumber = TakeRandomSwordAttackType();
-            Context.TriggerNumber = 4;
-            Context.AnimationDuration = SwordAttackDuration;
-        }
-        
         protected override void EndAction_Internal()
         {
         }

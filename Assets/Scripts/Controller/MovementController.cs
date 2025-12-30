@@ -20,7 +20,7 @@ namespace Controller
         private NavMeshAgent _navMeshAgent;
         private Camera _camera;
 
-        private float _rollingSpeed = 4f;
+        private const float _rollingSpeed = 4f;
         private float _walkingSpeed;
         private float _runningSpeed;
         private const float RotationSpeed = 80f;
@@ -84,8 +84,7 @@ namespace Controller
             }
 
             // 이동 방향 계산
-            _currentVelocity =
-                Vector3.right * horizontal + Vector3.forward * vertical;
+            _currentVelocity = Vector3.right * horizontal + Vector3.forward * vertical;
 
             var speed = isRunning ? _runningSpeed : _walkingSpeed;
             

@@ -1,0 +1,24 @@
+﻿using ActionHandler.Data;
+using Controller.Animation;
+
+namespace ActionHandler.Processor
+{
+    public class PunchAttackProcessor : IAttackProcessor
+    {
+        private const float PunchAttackDuration = 0.6f;
+        private const int DefaultAttackTrigger = 4;
+        
+        public void SetContext(HandlerContext context, ref AttackHandler.EAttackSide attackSide)
+        {
+            var nextAttackSide = attackSide == AttackHandler.EAttackSide.Left 
+                ? AttackHandler.EAttackSide.Right 
+                : AttackHandler.EAttackSide.Left;
+            
+            context.AnimationType = EAnimationType.Attack;
+            context.AttackSide = nextAttackSide;
+            context.ActionNumber = nextAttackSide == AttackHandler.EAttackSide.Left ? 1 : 4;
+            context.TriggerNumber = DefaultAttackTrigger;
+            context.AnimationDuration = PunchAttackDuration;
+        }
+    }
+}

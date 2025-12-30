@@ -62,14 +62,14 @@ namespace Controller
                 this, 
                 context =>
                 {
-                    OnInputLock(context.AnimationDuration / context.AnimationMultiplier);
+                    OnInputLock(context.AdjustedDuration);
                     AnimationController.OnAttack(context);
                 }));
             
             _actionHandlers.Add(EActionHandler.Rolling, new RollingHandler(this, 
                 context =>
                 {
-                    OnInputLock(context.AnimationDuration / context.AnimationMultiplier);
+                    OnInputLock(context.AdjustedDuration);
                     MovementController.OnRolling(context);
                 }));
             

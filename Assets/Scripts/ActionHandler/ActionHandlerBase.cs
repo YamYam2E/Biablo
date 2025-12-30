@@ -7,7 +7,7 @@ namespace ActionHandler
     public abstract class ActionHandlerBase : IActionHandler
     {
         public ActorControllerBase Controller { get; }
-        public HandlerContext Context { get; protected set; }
+        public HandlerContext Context { get; private set; }
         public bool IsActive { get; private set; }
         
         protected abstract void StartAction_Internal();

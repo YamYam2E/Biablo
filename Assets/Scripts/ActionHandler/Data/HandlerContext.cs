@@ -1,5 +1,4 @@
 ﻿using Common;
-using Common.SkillType;
 using Controller.Animation;
 using UnityEngine;
 
@@ -19,6 +18,7 @@ namespace ActionHandler.Data
         public float AnimationMultiplier = 1f;
         
         public float Damage = 0f;
-        
+
+        public float AdjustedDuration => AnimationDuration / AnimationMultiplier;
     }
 }
