@@ -30,13 +30,14 @@ namespace Ai
             InitializeBlackboard();
             
             _attackSequence = new SequenceNode(_blackboard);
-            _attackSequence.AddChild( new IsInAttackRangeConditionNode( transform, _blackboard ) );
             _attackSequence.AddChild( new LookAtTargetActionNode( _actorController, _blackboard ) );
-            _attackSequence.AddChild( new AttackActionNode(_actorController, _blackboard) );
+            // _attackSequence.AddChild( new IsInAttackRangeConditionNode( transform, _blackboard ) );
+            // _attackSequence.AddChild( new AttackActionNode(_actorController, _blackboard) );
             
             _detectSequence = new SequenceNode(_blackboard);
             _detectSequence.AddChild( new DetectiveTargetConditionNode(transform, _blackboard ) );
-            _detectSequence.AddChild( new FollowTargetAction(_actorController, _blackboard) );
+            // _detectSequence.AddChild( new FollowTargetAction(_actorController, _blackboard) );
+            
 
             _rootNode = new SelectorNode(_blackboard);
             _rootNode.AddChild( _attackSequence );
@@ -59,18 +60,26 @@ namespace Ai
             _rootNode?.Evaluate();
         }
 
-        private Color _gizmosDetectColor = new(1, 0.92f, 0.016f, 0.05f);
-        private Color _gizmosAttackColor = new(1f, 0f, 0f, 0.1f);
-        private Color _gizmosTargetColor = new(0.6f, 0.1f, 0.4f, 0.2f);
+        private readonly Color _gizmosDetectColor = new(1, 0.92f, 0.016f, 0.09f);
+        private readonly Color _gizmosAttackColor = new(1f, 0f, 0f, 0.1f);
+        private readonly Color _gizmosTargetColor = new(0.6f, 0.1f, 0.4f, 0.2f);
         
         private void OnDrawGizmos()
         {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine( transform.position, transform.position + transform.forward * 10);
+
+            var left = Quaternion.Euler(0, -60 * 0.5f, 0) * transform.forward;
+            var right = Quaternion.Euler(0, 60 * 0.5f, 0) * transform.forward;
+
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, transform.position + left * 10);
+            Gizmos.DrawLine(transform.position, transform.position + right * 10);
+            
             Gizmos.color = _gizmosDetectColor;
-            // Gizmos.matrix = transform.localToWorldMatrix;
             Gizmos.DrawSphere(transform.position, detectiveRange);
 
             Gizmos.color = _gizmosAttackColor;
-            // Gizmos.matrix = transform.localToWorldMatrix;
             Gizmos.DrawSphere(transform.position, attackRange);
 
             Gizmos.color = _gizmosTargetColor;

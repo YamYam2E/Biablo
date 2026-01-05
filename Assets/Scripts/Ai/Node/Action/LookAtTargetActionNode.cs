@@ -14,8 +14,11 @@ namespace Ai.Node.Action
 
         public override INode.State Evaluate()
         {
-            if (Blackboard.AttackTarget == null)
+            if (!Blackboard.AttackTarget)
+            {
+                Debug.Log("Target is null");
                 return INode.State.Failure;
+            }
 
             _actorController.Stop();
             
@@ -24,6 +27,7 @@ namespace Ai.Node.Action
             
             if (direction != Vector3.zero)
             {
+                Debug.Log("Looking at target");
                 // Y축 기준으로만 회전
                 var rotation = Quaternion.LookRotation(direction);
                 _actorController.transform.rotation = rotation;

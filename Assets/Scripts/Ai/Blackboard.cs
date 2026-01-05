@@ -12,5 +12,7 @@ namespace Ai
         public float AttackRange;
         public float DetectiveRange;
         public LayerMask TargetLayerMask;
+
+        public float DetectiveFovAngle = 60f;
     }
 }

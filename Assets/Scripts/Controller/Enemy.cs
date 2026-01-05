@@ -39,8 +39,8 @@ namespace Controller
         {
             AnimationEventController = animator.gameObject.AddComponent<AnimationEventController>();
             
-            AnimationEventController.OnFootL.AddListener(() => Debug.Log("FootL"));
-            AnimationEventController.OnFootR.AddListener(() => Debug.Log("FootR"));
+            // AnimationEventController.OnFootL.AddListener(() => Debug.Log("FootL"));
+            // AnimationEventController.OnFootR.AddListener(() => Debug.Log("FootR"));
             AnimationEventController.OnHit.AddListener( OnAttackAnimationEvent );
         }
 

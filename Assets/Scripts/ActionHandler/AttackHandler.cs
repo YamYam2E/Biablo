@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ActionHandler.Data;
 using ActionHandler.Processor;
 using Common;
-using Common.SkillType;
 using Controller;
-using Controller.Animation;
-using Random = UnityEngine.Random;
 
 namespace ActionHandler
 {
@@ -23,11 +19,15 @@ namespace ActionHandler
         
         private EAttackSide _attackSide;
         
-        private Dictionary<EWeaponType, IAttackProcessor> _attackProcessors;
+        private readonly Dictionary<EWeaponType, IAttackProcessor> _attackProcessors;
 
         public AttackHandler(ActorControllerBase controller, Action<HandlerContext> animationCallback) 
             : base(controller, animationCallback)
         {
+            /*
+             * TODO: 의존성 주입을 위해 외부에서 주입받도록 변경
+             * 객체간의 결합도를 낮추는 식으로 코딩해볼 것
+             */
             _attackProcessors = new Dictionary<EWeaponType, IAttackProcessor>
             {
                 { EWeaponType.Punch, new PunchAttackProcessor() },

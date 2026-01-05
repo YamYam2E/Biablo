@@ -4,7 +4,8 @@ namespace Ai.Node.Condition
 {
     public class IsInAttackRangeConditionNode : ConditionNodeBase
     {
-        private Transform _agent;
+        private readonly int _obstacleLayerMask = LayerMask.GetMask("Wall");
+        private readonly Transform _agent;
         
         public IsInAttackRangeConditionNode(Transform agent, Blackboard blackboard) : base(blackboard)
         {
@@ -18,20 +19,16 @@ namespace Ai.Node.Condition
         
         private bool IsInTarget()
         {
-            Blackboard.AttackTarget = null;
-            
-            var results = new Collider[1];
-            var playerLayerMask = LayerMask.GetMask("Player");
-            
-            var size = Physics.OverlapSphereNonAlloc(_agent.position, Blackboard.AttackRange, results, playerLayerMask);
-
-            if (size == 0)
+            if (!Blackboard.AttackTarget)
                 return false;
 
-            if (HasObstacleBetweenActor(results[0].transform))
-                return false;
+            var distanceToTarget = Vector3.Distance(_agent.position, Blackboard.AttackTarget.position);
 
-            Blackboard.AttackTarget = results[0].transform;
+            if (distanceToTarget > Blackboard.AttackRange)
+                return false;
+            
+            if (HasObstacleBetweenActor(Blackboard.AttackTarget))
+                return false;
             
             return true;
         }
@@ -40,7 +37,6 @@ namespace Ai.Node.Condition
         {
             var directionToTarget = (target.position - _agent.position).normalized;
             var distanceToTarget = Vector3.Distance(_agent.position, target.position);
-            var obstacleLayerMask = LayerMask.GetMask("Wall");
             
             // 장애물 체크
             if (Physics.Raycast(
@@ -48,14 +44,13 @@ namespace Ai.Node.Condition
                     directionToTarget,
                     out var hit,
                     distanceToTarget,
-                    obstacleLayerMask))
+                    _obstacleLayerMask))
             {
                 Debug.Log(hit.collider.gameObject.name);
                 return true;
             }
-            // 장애물에 가로막힌 경우
-            return false;
 
+            return false;
         }
     }
 }

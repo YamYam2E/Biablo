@@ -14,7 +14,7 @@ namespace Ai.Node.Action
 
         public override INode.State Evaluate()
         {
-            if( ReferenceEquals(Blackboard.AttackTarget, null) )
+            if( !Blackboard.AttackTarget )
                 return INode.State.Failure;
             
             _actorController.MoveTo(Blackboard.AttackTarget.position);

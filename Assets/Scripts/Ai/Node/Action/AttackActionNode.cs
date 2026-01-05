@@ -7,7 +7,7 @@ namespace Ai.Node.Action
 {
     public class AttackActionNode : ActionNodeBase
     {
-        private Enemy _actorController;
+        private readonly Enemy _actorController;
         private bool _isAttacking;
         private float _attackDuration;
         private float _attackStartTime;

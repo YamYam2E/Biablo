@@ -51,8 +51,11 @@ namespace Controller
             
             AnimationEventController = animator.gameObject.AddComponent<AnimationEventController>();
             
-            AnimationEventController.OnFootL.AddListener(() => Debug.Log("FootL"));
-            AnimationEventController.OnFootR.AddListener(() => Debug.Log("FootR"));
+            /*
+             * TODO: 발걸음에 이벤트를 집어넣을 경우 사용
+             */
+            // AnimationEventController.OnFootL.AddListener(() => Debug.Log("FootL"));
+            // AnimationEventController.OnFootR.AddListener(() => Debug.Log("FootR"));
             AnimationEventController.OnHit.AddListener( OnAttackAnimationEvent );
         }
 
