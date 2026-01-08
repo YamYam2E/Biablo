@@ -4,6 +4,7 @@ using Ai.Node.Composite;
 using Ai.Node.Condition;
 using Controller;
 using UnityEngine;
+using Util;
 
 namespace Ai
 {
@@ -41,6 +42,8 @@ namespace Ai
             _rootNode = new SelectorNode(_blackboard);
             _rootNode.AddChild( _attackSequence );
             _rootNode.AddChild( _detectSequence );
+            
+            GameDebug.Log("Start AI");
         }
 
         private Blackboard _blackboard;

@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Util;
 
 namespace Ai.Node.Condition
 {
@@ -51,7 +52,7 @@ namespace Ai.Node.Condition
             var results = Physics.OverlapSphere(_agent.position, Blackboard.DetectiveRange, _playerLayerMask);
             if (results.Length == 0)
             {
-                Debug.Log("<color=red>Can't found target</color>");
+                GameDebug.Log("Can't found target", Color.red);
                 return false;
             }
 
