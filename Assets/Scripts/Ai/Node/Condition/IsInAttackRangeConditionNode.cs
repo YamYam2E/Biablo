@@ -46,7 +46,6 @@ namespace Ai.Node.Condition
                     distanceToTarget,
                     _obstacleLayerMask))
             {
-                Debug.Log(hit.collider.gameObject.name);
                 return true;
             }
 

@@ -37,6 +37,7 @@ namespace Ai.Node.Condition
                 var distanceToTarget = Vector3.Distance(_agent.position, Blackboard.AttackTarget.position);
                 if (distanceToTarget > Blackboard.DetectiveRange)
                 {
+                    Debug.Log("<color=yellow>Target is out of range</color>");
                     Blackboard.AttackTarget = null;
                     return false;
                 }
@@ -49,15 +50,24 @@ namespace Ai.Node.Condition
             
             var results = Physics.OverlapSphere(_agent.position, Blackboard.DetectiveRange, _playerLayerMask);
             if (results.Length == 0)
+            {
+                Debug.Log("<color=red>Can't found target</color>");
                 return false;
+            }
 
             var direction = (results[0].transform.position - _agent.position).normalized;
-            
-            if (CheckObstacleBetweenActor(direction, results[0].transform))
-                return false;
 
             if (!CheckTargetInSight(direction, results[0].transform))
+            {
+                Debug.Log("<color=red>Isn't in sight target</color>");
                 return false;
+            }
+            
+            if (CheckObstacleBetweenActor(direction, results[0].transform))
+            {
+                Debug.Log("<color=red>Has obstacles between target</color>");
+                return false;
+            }
             
             Blackboard.AttackTarget = results[0].transform;
             
@@ -88,24 +98,13 @@ namespace Ai.Node.Condition
         /// <returns>true: 장애물이 있는 경우</returns>
         private bool CheckObstacleBetweenActor(Vector3 direction, Transform target)
         {
-            var distanceToTarget = Vector3.Distance(_agent.position, target.position);
-            
             /*
              * 장애물 체크
              */
-            if (!Physics.Raycast(
-                    _agent.position, 
-                    direction, 
-                    out var hit, 
-                    distanceToTarget,
-                    _obstacleLayerMask | _playerLayerMask) ) 
-                return true;
-            
-            // 맞은 오브젝트가 타겟인 경우
-            if (hit.transform == target)
-                return false;
-            
-            // 장애물에 가로막힌 경우
+            var layerMasks = _obstacleLayerMask | _playerLayerMask;
+            if( Physics.Raycast(_agent.position, direction, out var hit, 50f, layerMasks) )
+                return hit.transform != target;
+
             return true;
         }
     }

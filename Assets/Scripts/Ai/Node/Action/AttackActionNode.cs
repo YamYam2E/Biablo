@@ -15,7 +15,6 @@ namespace Ai.Node.Action
         public AttackActionNode(Enemy actorController, Blackboard blackboard) : base(blackboard)
         {
             _actorController = actorController;
-            
         }
 
         public override INode.State Evaluate()

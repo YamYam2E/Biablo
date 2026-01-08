@@ -20,9 +20,7 @@ namespace Ai
         private SequenceNode _detectSequence;
         
         private Enemy _actorController;
-        
-        private Blackboard _blackboard;
-        
+
         private void Start()
         {
             _actorController = GetComponent<Enemy>();
@@ -30,19 +28,22 @@ namespace Ai
             InitializeBlackboard();
             
             _attackSequence = new SequenceNode(_blackboard);
-            _attackSequence.AddChild( new LookAtTargetActionNode( _actorController, _blackboard ) );
-            // _attackSequence.AddChild( new IsInAttackRangeConditionNode( transform, _blackboard ) );
-            // _attackSequence.AddChild( new AttackActionNode(_actorController, _blackboard) );
+            _attackSequence.AddChild( new IsInAttackRangeConditionNode(transform, _blackboard) );
+            _attackSequence.AddChild( new StopActionNode(_actorController, _blackboard) );
+            _attackSequence.AddChild( new AttackActionNode(_actorController, _blackboard) );
             
             _detectSequence = new SequenceNode(_blackboard);
             _detectSequence.AddChild( new DetectiveTargetConditionNode(transform, _blackboard ) );
-            // _detectSequence.AddChild( new FollowTargetAction(_actorController, _blackboard) );
+            _attackSequence.AddChild( new LookAtTargetActionNode( _actorController, _blackboard ) );
+            _detectSequence.AddChild( new FollowTargetAction(_actorController, _blackboard) );
             
 
             _rootNode = new SelectorNode(_blackboard);
             _rootNode.AddChild( _attackSequence );
             _rootNode.AddChild( _detectSequence );
         }
+
+        private Blackboard _blackboard;
 
         private void InitializeBlackboard()
         {

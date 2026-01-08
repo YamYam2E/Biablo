@@ -5,7 +5,7 @@ namespace Ai.Node.Action
 {
     public class LookAtTargetActionNode : ActionNodeBase
     {
-        private Enemy _actorController;
+        private readonly Enemy _actorController;
         
         public LookAtTargetActionNode(Enemy actorController, Blackboard blackboard) : base(blackboard)
         {
@@ -16,7 +16,7 @@ namespace Ai.Node.Action
         {
             if (!Blackboard.AttackTarget)
             {
-                Debug.Log("Target is null");
+                Debug.Log("<color=red>Target is null</color>");
                 return INode.State.Failure;
             }
 
@@ -27,7 +27,7 @@ namespace Ai.Node.Action
             
             if (direction != Vector3.zero)
             {
-                Debug.Log("Looking at target");
+                Debug.Log("<color=green>Looking at target</color>");
                 // Y축 기준으로만 회전
                 var rotation = Quaternion.LookRotation(direction);
                 _actorController.transform.rotation = rotation;

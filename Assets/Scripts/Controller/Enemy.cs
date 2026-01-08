@@ -19,8 +19,8 @@ namespace Controller
                 MaxHealth = 100,
                 CurrentHealth = 100,
                 AttackSpeed = 0.5f,
-                WalkingSpeed = 2.5f,
-                RunningSpeed = 5f,
+                WalkingSpeed = 5f,
+                RunningSpeed = 10f,
                 Stamina = 100
             };
             
@@ -105,6 +105,12 @@ namespace Controller
 
         protected override void UnlockInput_Internal()
         {
+            /*
+             * TODO: 전체 핸들러의 액션을 끄는 것보다,
+             * 활성화 된 액션이 무엇인지 체크하고 그 액션만 끄는게 좋지 않을까?
+             */
+            foreach (var handler in _actionHandlers.Values)
+                handler.EndAction();
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Ai.Node.Action
 {
     public class FollowTargetAction : ActionNodeBase
     {
-        private Enemy _actorController;
+        private readonly Enemy _actorController;
         
         public FollowTargetAction(Enemy actorController, Blackboard blackboard) : base(blackboard)
         {
