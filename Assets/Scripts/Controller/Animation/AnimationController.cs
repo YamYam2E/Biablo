@@ -1,7 +1,5 @@
-﻿using ActionHandler;
-using ActionHandler.Data;
+﻿using ActionHandler.Data;
 using Common;
-using Common.SkillType;
 using UnityEngine;
 
 namespace Controller.Animation
@@ -13,6 +11,11 @@ namespace Controller.Animation
         public void Initialize(Animator animator)
         {
             _animator = animator;
+        }
+
+        public void OnIdle(HandlerContext context = null)
+        {
+            _animator.SetBool(AnimatorHash.Moving, false);
         }
 
         public void OnAttack(HandlerContext context)

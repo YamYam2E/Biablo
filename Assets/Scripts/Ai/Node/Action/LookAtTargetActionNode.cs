@@ -1,5 +1,6 @@
 ﻿using Controller;
 using UnityEngine;
+using Util;
 
 namespace Ai.Node.Action
 {
@@ -16,7 +17,7 @@ namespace Ai.Node.Action
         {
             if (!Blackboard.AttackTarget)
             {
-                Debug.Log("<color=red>Target is null</color>");
+                GameDebug.Log("Target is null", Color.orangeRed);
                 return INode.State.Failure;
             }
 
@@ -27,7 +28,7 @@ namespace Ai.Node.Action
             
             if (direction != Vector3.zero)
             {
-                Debug.Log("<color=green>Looking at target</color>");
+                GameDebug.Log("Looking at target", Color.lawnGreen);
                 // Y축 기준으로만 회전
                 var rotation = Quaternion.LookRotation(direction);
                 _actorController.transform.rotation = rotation;

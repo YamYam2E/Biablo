@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using Util;
 
 namespace Ai.Node.Condition
@@ -38,7 +37,7 @@ namespace Ai.Node.Condition
                 var distanceToTarget = Vector3.Distance(_agent.position, Blackboard.AttackTarget.position);
                 if (distanceToTarget > Blackboard.DetectiveRange)
                 {
-                    Debug.Log("<color=yellow>Target is out of range</color>");
+                    GameDebug.Log($"Target is out of range", Color.lawnGreen);
                     Blackboard.AttackTarget = null;
                     return false;
                 }
@@ -52,7 +51,7 @@ namespace Ai.Node.Condition
             var results = Physics.OverlapSphere(_agent.position, Blackboard.DetectiveRange, _playerLayerMask);
             if (results.Length == 0)
             {
-                GameDebug.Log("Can't found target", Color.red);
+                GameDebug.Log("Can't found target", Color.orangeRed);
                 return false;
             }
 
@@ -60,13 +59,13 @@ namespace Ai.Node.Condition
 
             if (!CheckTargetInSight(direction, results[0].transform))
             {
-                Debug.Log("<color=red>Isn't in sight target</color>");
+                GameDebug.Log("Isn't in sight target", Color.orangeRed);
                 return false;
             }
             
             if (CheckObstacleBetweenActor(direction, results[0].transform))
             {
-                Debug.Log("<color=red>Has obstacles between target</color>");
+                GameDebug.Log("Has obstacles between target", Color.orangeRed);
                 return false;
             }
             

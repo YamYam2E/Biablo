@@ -19,6 +19,7 @@ namespace Ai
 
         private SequenceNode _attackSequence;
         private SequenceNode _detectSequence;
+        private SequenceNode _idleSequence;
         
         private Enemy _actorController;
 
@@ -38,12 +39,16 @@ namespace Ai
             _attackSequence.AddChild( new LookAtTargetActionNode( _actorController, _blackboard ) );
             _detectSequence.AddChild( new FollowTargetAction(_actorController, _blackboard) );
             
+            
+            _idleSequence = new SequenceNode(_blackboard);
+            _idleSequence.AddChild( new StopActionNode(_actorController, _blackboard) );
 
             _rootNode = new SelectorNode(_blackboard);
             _rootNode.AddChild( _attackSequence );
             _rootNode.AddChild( _detectSequence );
+            _rootNode.AddChild( _idleSequence );
             
-            GameDebug.Log("Start AI");
+            GameDebug.Log($"Start AI : {_actorController.name}");
         }
 
         private Blackboard _blackboard;

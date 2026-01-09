@@ -66,6 +66,7 @@ namespace Controller
         public void Stop()
         {
             MovementController.Stop();
+            AnimationController.OnIdle();
         }
         
         public override void OnTakeDamage(bool isCritical, float damage)
